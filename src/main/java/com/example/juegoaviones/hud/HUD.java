@@ -7,7 +7,7 @@ import com.jme3.scene.Node;
 public class HUD {
     private Node guiNode;
     private BitmapFont guiFont;
-    private BitmapFont hudText;
+    private BitmapText hudText;
     private BitmapText messageText;
 
     public HUD(Node guiNode, BitmapFont guiFont) {
@@ -17,6 +17,17 @@ public class HUD {
     }
 
     private void init() {
-        
+        hudText = new BitmapText(guiFont, false);
+        hudText.setSize(guiFont.getCharSet().getRenderedSize());
+        hudText.setLocalTranslation(10, messageText.getLineHeight() * 2, 0);
+        guiNode.attachChild(messageText);
+    }
+
+    public void updateHUD(int seconds, int score) {
+        hudText.setText(String.format("Tiempo: %ds | Puntuacion: %d", seconds, score));
+    }
+
+    public void showMessage(String msg) {
+        messageText.setText(msg);
     }
 }

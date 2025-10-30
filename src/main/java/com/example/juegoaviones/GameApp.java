@@ -55,11 +55,11 @@ public class GameApp extends SimpleApplication {
         inputManager.addListener(actionListener, ACTION_PITCH_UP, ACTION_PITCH_DOWN);
 
         // HUD y DB
-    //     hud = new HUD(guiNode, guiFont);
+        hud = new HUD(guiNode, guiFont);
         playerDAO = new PlayerDAO();
 
         startTime = System.currentTimeMillis();
-    //    hud.updateHUD(0, score);
+        hud.updateHUD(0, score);
     }
 
     private final ActionListener actionListener = new ActionListener() {
@@ -81,7 +81,7 @@ public class GameApp extends SimpleApplication {
         cam.lookAt(planeNode.getLocalTranslation(), Vector3f.UNIT_Y);
 
         long elapsedSec = (System.currentTimeMillis() - startTime) / 1000;
-    //    hud.updateHUD((int) elapsedSec, score);
+        hud.updateHUD((int) elapsedSec, score);
 
         if (loc.z < -1000) endGame();
     }
@@ -91,7 +91,7 @@ public class GameApp extends SimpleApplication {
     //    PlayerScore ps = new PlayerScore("JugadorLocal", score, (int) elapsedSec);
         try {
     //        playerDAO.insertScore(ps);
-    //        hud.showMessage("✅ Juego terminado. Puntuación guardada: " + score);
+            hud.showMessage("✅ Juego terminado. Puntuación guardada: " + score);
         } catch (Exception e) {
     //        hud.showMessage("⚠️ Error guardando en BD: " + e.getMessage());
         }
