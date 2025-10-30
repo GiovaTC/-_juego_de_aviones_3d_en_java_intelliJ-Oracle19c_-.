@@ -88,12 +88,12 @@ public class GameApp extends SimpleApplication {
 
     private void endGame() {
         long elapsedSec = (System.currentTimeMillis() - startTime) / 1000;
-    //    PlayerScore ps = new PlayerScore("JugadorLocal", score, (int) elapsedSec);
+        PlayerScore ps = new PlayerScore("JugadorLocal", score, (int) elapsedSec);
         try {
-    //        playerDAO.insertScore(ps);
+            playerDAO.insertScore(ps);
             hud.showMessage("✅ Juego terminado. Puntuación guardada: " + score);
         } catch (Exception e) {
-    //        hud.showMessage("⚠️ Error guardando en BD: " + e.getMessage());
+            hud.showMessage("⚠️ Error guardando en BD: " + e.getMessage());
         }
         stop();
     }
