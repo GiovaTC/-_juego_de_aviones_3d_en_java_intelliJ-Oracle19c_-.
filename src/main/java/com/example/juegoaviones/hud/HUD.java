@@ -4,9 +4,14 @@ import com.jme3.font.BitmapFont;
 import com.jme3.font.BitmapText;
 import com.jme3.scene.Node;
 
+/**
+ * HUD (Head-Up Display)
+ * Muestra información del juego como tiempo, puntuación y mensajes en pantalla.
+ */
 public class HUD {
-    private Node guiNode;
-    private BitmapFont guiFont;
+
+    private final Node guiNode;
+    private final BitmapFont guiFont;
     private BitmapText hudText;
     private BitmapText messageText;
 
@@ -17,17 +22,44 @@ public class HUD {
     }
 
     private void init() {
+        // === Texto principal del HUD (tiempo y puntuación) ===
         hudText = new BitmapText(guiFont, false);
         hudText.setSize(guiFont.getCharSet().getRenderedSize());
-        hudText.setLocalTranslation(10, messageText.getLineHeight() * 2, 0);
+        hudText.setText("Tiempo: 0s | Puntuación: 0");
+        hudText.setLocalTranslation(10, 580, 0); // esquina superior izquierda
+        guiNode.attachChild(hudText);
+
+        // === Texto para mensajes ===
+        messageText = new BitmapText(guiFont, false);
+        messageText.setSize(guiFont.getCharSet().getRenderedSize());
+        messageText.setText("¡Bienvenido, piloto!");
+        messageText.setLocalTranslation(10, 550, 0);
         guiNode.attachChild(messageText);
     }
 
+    /**
+     * Actualiza el HUD con tiempo y puntuación
+     */
     public void updateHUD(int seconds, int score) {
-        hudText.setText(String.format("Tiempo: %ds | Puntuacion: %d", seconds, score));
+        if (hudText != null) {
+            hudText.setText(String.format("Tiempo: %ds | Puntuación: %d", seconds, score));
+        }
     }
 
+    /**
+     * Muestra un mensaje dinámico en pantalla
+     */
     public void showMessage(String msg) {
-        messageText.setText(msg);
+        if (messageText != null) {
+            messageText.setText(msg);
+        }
+    }
+
+    /**
+     * Limpia los elementos del HUD al cerrar o reiniciar el juego
+     */
+    public void clear() {
+        guiNode.detachChild(hudText);
+        guiNode.detachChild(messageText);
     }
 }

@@ -15,7 +15,19 @@ import com.jme3.scene.Geometry;
 import com.jme3.scene.Node;
 import com.jme3.scene.shape.Box;
 
-
+/**
+ * 🚀 GameApp — Juego de Aviones 3D con jMonkeyEngine + Oracle JDBC.
+ *
+ * Controla un avión simple en 3D, muestra tiempo y puntuación en pantalla,
+ * y guarda los resultados en una base de datos Oracle 19c.
+ *
+ * Controles:
+ *   ↑  : Subir avión
+ *   ↓  : Bajar avión
+ *
+ * Autor: Giovanny Tapiero
+ * Versión: 1.0
+ */
 public class GameApp extends SimpleApplication {
 
     private Node planeNode;
@@ -31,7 +43,7 @@ public class GameApp extends SimpleApplication {
 
     @Override
     public void simpleInitApp() {
-        // Avion como cubo azul
+        // === Crear avión como cubo azul ===
         Box box = new Box(1, 0.3f, 3);
         Geometry geom = new Geometry("Plane", box);
         Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
@@ -43,23 +55,32 @@ public class GameApp extends SimpleApplication {
         planeNode.setLocalTranslation(0, 5, 0);
         rootNode.attachChild(planeNode);
 
-        // Luz
+        // === Luz ===
         DirectionalLight sun = new DirectionalLight();
         sun.setDirection(new Vector3f(-0.5f, -1f, -0.5f));
         sun.setColor(ColorRGBA.White);
         rootNode.addLight(sun);
 
-        // Input
+        // === Cámara inicial ===
+        cam.setLocation(new Vector3f(0, 8, 16));
+        cam.lookAt(planeNode.getLocalTranslation(), Vector3f.UNIT_Y);
+
+        // === Controles de teclado ===
         inputManager.addMapping(ACTION_PITCH_UP, new KeyTrigger(KeyInput.KEY_UP));
         inputManager.addMapping(ACTION_PITCH_DOWN, new KeyTrigger(KeyInput.KEY_DOWN));
         inputManager.addListener(actionListener, ACTION_PITCH_UP, ACTION_PITCH_DOWN);
 
-        // HUD y DB
+        // === HUD y conexión BD ===
+        if (guiFont == null) {
+            guiFont = assetManager.loadFont("Interface/Fonts/Default.fnt");
+        }
+
         hud = new HUD(guiNode, guiFont);
         playerDAO = new PlayerDAO();
 
         startTime = System.currentTimeMillis();
         hud.updateHUD(0, score);
+        hud.showMessage("✈️ Bienvenido, piloto. ¡Usa ↑ / ↓ para volar!");
     }
 
     private final ActionListener actionListener = new ActionListener() {
@@ -73,28 +94,34 @@ public class GameApp extends SimpleApplication {
 
     @Override
     public void simpleUpdate(float tpf) {
+        // Movimiento del avión
         Vector3f loc = planeNode.getLocalTranslation();
         loc.addLocal(0, pitch * tpf * 5f, -speed * tpf);
         planeNode.setLocalTranslation(loc);
 
+        // Actualizar cámara detrás del avión
         cam.setLocation(new Vector3f(loc.x, loc.y + 6f, loc.z + 12f));
         cam.lookAt(planeNode.getLocalTranslation(), Vector3f.UNIT_Y);
 
+        // Actualizar HUD
         long elapsedSec = (System.currentTimeMillis() - startTime) / 1000;
         hud.updateHUD((int) elapsedSec, score);
 
+        // Fin del recorrido
         if (loc.z < -1000) endGame();
     }
 
     private void endGame() {
         long elapsedSec = (System.currentTimeMillis() - startTime) / 1000;
         PlayerScore ps = new PlayerScore("JugadorLocal", score, (int) elapsedSec);
+
         try {
             playerDAO.insertScore(ps);
             hud.showMessage("✅ Juego terminado. Puntuación guardada: " + score);
         } catch (Exception e) {
             hud.showMessage("⚠️ Error guardando en BD: " + e.getMessage());
         }
+
         stop();
     }
 }
