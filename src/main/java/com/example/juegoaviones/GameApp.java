@@ -44,6 +44,57 @@ public class GameApp extends SimpleApplication {
         rootNode.attachChild(planeNode);
 
         // Luz
+        DirectionalLight sun = new DirectionalLight();
+        sun.setDirection(new Vector3f(-0.5f, -1f, -0.5f));
+        sun.setColor(ColorRGBA.White);
+        rootNode.addLight(sun);
 
+        // Input
+        inputManager.addMapping(ACTION_PITCH_UP, new KeyTrigger(KeyInput.KEY_UP));
+        inputManager.addMapping(ACTION_PITCH_DOWN, new KeyTrigger(KeyInput.KEY_DOWN));
+        inputManager.addListener(actionListener, ACTION_PITCH_UP, ACTION_PITCH_DOWN);
+
+        // HUD y DB
+    //     hud = new HUD(guiNode, guiFont);
+        playerDAO = new PlayerDAO();
+
+        startTime = System.currentTimeMillis();
+    //    hud.updateHUD(0, score);
+    }
+
+    private final ActionListener actionListener = new ActionListener() {
+        public void onAction(String name, boolean isPressed, float tpf) {
+            if (name.equals(ACTION_PITCH_UP))
+                pitch = isPressed ? 0.8f : 0f;
+            if (name.equals(ACTION_PITCH_DOWN))
+                pitch = isPressed ? -0.8f : 0f;
+        }
+    };
+
+    @Override
+    public void simpleUpdate(float tpf) {
+        Vector3f loc = planeNode.getLocalTranslation();
+        loc.addLocal(0, pitch * tpf * 5f, -speed * tpf);
+        planeNode.setLocalTranslation(loc);
+
+        cam.setLocation(new Vector3f(loc.x, loc.y + 6f, loc.z + 12f));
+        cam.lookAt(planeNode.getLocalTranslation(), Vector3f.UNIT_Y);
+
+        long elapsedSec = (System.currentTimeMillis() - startTime) / 1000;
+    //    hud.updateHUD((int) elapsedSec, score);
+
+        if (loc.z < -1000) endGame();
+    }
+
+    private void endGame() {
+        long elapsedSec = (System.currentTimeMillis() - startTime) / 1000;
+    //    PlayerScore ps = new PlayerScore("JugadorLocal", score, (int) elapsedSec);
+        try {
+    //        playerDAO.insertScore(ps);
+    //        hud.showMessage("✅ Juego terminado. Puntuación guardada: " + score);
+        } catch (Exception e) {
+    //        hud.showMessage("⚠️ Error guardando en BD: " + e.getMessage());
+        }
+        stop();
     }
 }
