@@ -30,5 +30,20 @@ public class GameApp extends SimpleApplication {
     private static final String ACTION_PITCH_DOWN = "PitchDown";
 
     @Override
-    public void simpleInitApp() {}
+    public void simpleInitApp() {
+        // Avion como cubo azul
+        Box box = new Box(1, 0.3f, 3);
+        Geometry geom = new Geometry("Plane", box);
+        Material mat = new Material(assetManager, "Common/MatDefs/Misc/Unshaded.j3md");
+        mat.setColor("Color", ColorRGBA.Blue);
+        geom.setMaterial(mat);
+
+        planeNode = new Node("planeNode");
+        planeNode.attachChild(geom);
+        planeNode.setLocalTranslation(0, 5, 0);
+        rootNode.attachChild(planeNode);
+
+        // Luz
+
+    }
 }
